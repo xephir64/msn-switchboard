@@ -17,4 +17,24 @@ public class ContactService {
     public List<Contact> getContacts(User user) throws SQLException {
         return contactRepository.getContacts(user.getId());
     }
+
+    public List<Contact> getForwardContacts(User user) throws SQLException {
+        return contactRepository.getForwardList(user.getId());
+    }
+
+    public List<Contact> getReverseContacts(User user) throws SQLException {
+        return contactRepository.getReverseList(user.getId());
+    }
+
+    public List<Contact> getAllowContacts(User user) throws SQLException {
+        return contactRepository.getAllowList(user.getId());
+    }
+
+    public List<Contact> getBlockedContacts(User user) throws SQLException {
+        return contactRepository.getBlockList(user.getId());
+    }
+
+    public String getEmail(int id) throws SQLException {
+        return contactRepository.getContactEmail(id);
+    }
 }

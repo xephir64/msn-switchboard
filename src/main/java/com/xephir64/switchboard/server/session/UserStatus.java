@@ -1,6 +1,6 @@
 package com.xephir64.switchboard.server.session;
 
-public enum UserState {
+public enum UserStatus {
     ONLINE,
     BUSY,
     IDLE,

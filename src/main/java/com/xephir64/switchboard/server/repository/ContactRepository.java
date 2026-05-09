@@ -20,7 +20,7 @@ public class ContactRepository {
     public List<Contact> getContacts(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT owner_id, contact_id, is_forward, is_allow, is_block, is_reverse FROM contact WHERE owner_id = ? OR contact_id = ?"
+                    "SELECT owner_id, contact_id FROM contact WHERE owner_id = ?"
             );
             stmt.setInt(1, userId);
             stmt.setInt(2, userId);
@@ -32,11 +32,7 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id"),
-                        rs.getBoolean("is_forward"),
-                        rs.getBoolean("is_allow"),
-                        rs.getBoolean("is_block"),
-                        rs.getBoolean("is_reverse")
+                        rs.getInt("contact_id")
                 ));
             }
 
@@ -58,11 +54,7 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id"),
-                        rs.getBoolean("is_forward"),
-                        rs.getBoolean("is_allow"),
-                        rs.getBoolean("is_block"),
-                        rs.getBoolean("is_reverse")
+                        rs.getInt("contact_id")
                 ));
             }
 
@@ -84,11 +76,7 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id"),
-                        rs.getBoolean("is_forward"),
-                        false,
-                        rs.getBoolean("is_block"),
-                        rs.getBoolean("is_reverse")
+                        rs.getInt("contact_id")
                 ));
             }
 
@@ -99,7 +87,7 @@ public class ContactRepository {
     public List<Contact> getBlockList(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT owner_id, contact_id, is_block FROM contact WHERE owner_id = ? AND is_block = true"
+                    "SELECT owner_id, contact_id FROM contact WHERE owner_id = ? AND is_block = true"
             );
             stmt.setInt(1, userId);
 
@@ -110,15 +98,48 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id"),
-                        false,
-                        false,
-                        rs.getBoolean("is_block"),
-                        false
+                        rs.getInt("contact_id")
                 ));
             }
 
             return contacts;
+        }
+    }
+
+    public List<Contact> getReverseList(int userId) throws SQLException {
+        try (Connection conn = db.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT owner_id, contact_id FROM contact WHERE contact_id = ? AND is_forward = TRUE"
+            );
+            stmt.setInt(1, userId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            List<Contact> contacts = new ArrayList<>();
+
+            while (rs.next()) {
+                contacts.add(new Contact(
+                        rs.getInt("owner_id"),
+                        rs.getInt("contact_id")
+                ));
+            }
+
+            return contacts;
+        }
+    }
+
+    public String getContactEmail(int contactId) throws SQLException {
+        try (Connection conn = db.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT email FROM user WHERE id = ?"
+            );
+            stmt.setInt(1, contactId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+            return null;
         }
     }
 }

@@ -9,8 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SynHandler implements CommandHandler {
     private static final Logger LOGGER = LogManager.getLogger(SynHandler.class.getName());
@@ -50,19 +50,10 @@ public class SynHandler implements CommandHandler {
         session.send("LSG " + trId + " " + version + " 1 1 0 Friends 0");
 
         try {
-            List<Contact> contacts = session.getContactService().getContacts(session.getUser());
-
-            List<Contact> fl = new ArrayList<>();
-            List<Contact> al = new ArrayList<>();
-            List<Contact> bl = new ArrayList<>();
-            List<Contact> rl = new ArrayList<>();
-
-            for (Contact c : contacts) {
-                if (c.isForward()) fl.add(c);
-                if (c.isAllow()) al.add(c);
-                if (c.isBlock()) bl.add(c);
-                if (c.isReverse()) rl.add(c);
-            }
+            List<Contact> fl = session.getContactService().getForwardContacts(session.getUser());
+            List<Contact> al = session.getContactService().getAllowContacts(session.getUser());
+            List<Contact> bl = session.getContactService().getBlockedContacts(session.getUser());
+            List<Contact> rl = session.getContactService().getReverseContacts(session.getUser());
 
             sendList(session, trId, version, "FL", fl);
             sendList(session, trId, version, "AL", al);
@@ -85,7 +76,10 @@ public class SynHandler implements CommandHandler {
         int index = 1;
 
         for (Contact c : list) {
-            User relUser = session.getAuthService().getFriendUser(c.getContactId());
+            int id = c.contactId();
+            if (Objects.equals(listType, "RL")) id = c.ownerId();
+
+            User relUser = session.getAuthService().getFriendUser(id);
 
             String email = relUser.getEmail();
             String name = relUser.getDisplayName();

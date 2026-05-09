@@ -3,6 +3,7 @@ package com.xephir64.switchboard.server.session;
 import com.xephir64.switchboard.server.entity.User;
 import com.xephir64.switchboard.server.services.AuthService;
 import com.xephir64.switchboard.server.services.ContactService;
+import com.xephir64.switchboard.server.services.PresenceService;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,10 +17,9 @@ public class ClientSession {
     private ContactService contactService;
 
     private String msnProtocol;
-    public String email;
 
     private User user;
-    public UserState state;
+    public UserStatus status;
 
     public ClientSession(Socket socket, AuthService authService, ContactService contactService) throws IOException {
         this.socket = socket;
@@ -31,7 +31,6 @@ public class ClientSession {
         } catch (IOException e) {
             throw new IOException(e);
         }
-
     }
 
     public void setMsnProtocol(String msnP) {
@@ -76,5 +75,17 @@ public class ClientSession {
 
     public User getUser() {
         return this.user;
+    }
+
+    public UserStatus getMsnStatus() {
+        return this.status;
+    }
+
+    public void setOffline() {
+        PresenceService.setOffline(this);
+    }
+
+    public void setOnline() {
+        PresenceService.setOnline(this);
     }
 }

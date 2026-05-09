@@ -16,13 +16,19 @@ public class UsrHandler implements CommandHandler {
     public void handle(ClientSession session, Command cmd) throws IOException {
         List<String> args = cmd.getArgs();
         switch(session.getMsnProtocol()) {
-            case "MSNP8", "MSNP7":
+            case "MSNP7", "MSNP6", "MSNP5", "MSNP4", "MSNP3", "MSNP2":
                 if (args.size() >= 2 && Objects.equals(args.get(1), "I")) handleChallenge(session, cmd);
                 if (args.size() >= 2 && Objects.equals(args.get(1), "S")) checkPassword(session, cmd);
                 break;
+            case "MSNP8", "MSNP9", "MSNP10", "MSNP11", "MSNP12":
+                connectTweener(session, cmd); break;
             default:
 
         }
+
+    }
+
+    private void connectTweener(ClientSession session, Command cmd) {
 
     }
 
@@ -47,12 +53,12 @@ public class UsrHandler implements CommandHandler {
 
     private void handleChallenge(ClientSession session, Command cmd) throws IOException {
         List<String> args = cmd.getArgs();
-        session.email = args.get(2);
+        String email = args.get(2);
 
         User user;
 
         try {
-            user = session.getAuthService().login(session.email);
+            user = session.getAuthService().login(email);
         } catch (SQLException e) {
             return;
         }
