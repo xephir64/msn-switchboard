@@ -13,8 +13,8 @@ public class ClientSession {
     private final BufferedReader in;
     private final BufferedWriter out;
 
-    private AuthService authService;
-    private ContactService contactService;
+    private final AuthService authService;
+    private final ContactService contactService;
 
     private String msnProtocol;
 
@@ -52,6 +52,7 @@ public class ClientSession {
     }
 
     public void close() throws IOException {
+        if (PresenceService.isOnline(user.getEmail())) PresenceService.setOffline(this);
         in.close();
         out.close();
         socket.close();

@@ -1,7 +1,7 @@
 package com.xephir64.switchboard.server.entity;
 
 public class User {
-    private int id;
+    private final int id;
     private final String email;
     private String password;
     private String displayName;

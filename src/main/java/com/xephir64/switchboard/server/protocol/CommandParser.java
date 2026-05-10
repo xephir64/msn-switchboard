@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class CommandParser {
     public static Command parse(String line) {
+        if (line == null) return null;
         String[] parts = line.split(" ");
         Command cmd = new Command();
         cmd.setName(parts[0]);

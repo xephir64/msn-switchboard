@@ -1,13 +1,13 @@
 package com.xephir64.switchboard.server.session;
 
 public enum UserStatus {
-    ONLINE,
-    BUSY,
-    IDLE,
+    NLN,
+    BSY,
+    IDL,
     BRB,
-    AWAY,
+    AWY,
     PHN,
     LUN,
-    APPEARS_OFFLINE,
-    OFFLINE,
+    HDN,
+    FLN,
 }

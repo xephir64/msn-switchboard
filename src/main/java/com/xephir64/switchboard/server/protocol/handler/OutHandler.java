@@ -10,7 +10,7 @@ public class OutHandler implements CommandHandler {
 
     @Override
     public void handle(ClientSession session, Command cmd) throws IOException {
-        session.status = UserStatus.OFFLINE;
+        session.status = UserStatus.FLN;
         session.setOffline();
         session.send("OUT\r\n");
         session.close();

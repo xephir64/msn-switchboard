@@ -32,21 +32,20 @@ public class SynHandler implements CommandHandler {
         int trId = cmd.getTrId();
         int version = 255;
 
-        // SYN response
         session.send("SYN " + trId + " " + version);
 
         // Settings
         session.send("GTC " + trId + " " + version + " A");
         session.send("BLP " + trId + " " + version + " AL");
 
-        // Profile (minimal)
+        // Profile
         session.send("PRP " + trId + " " + version + " PHH");
         session.send("PRP " + trId + " " + version + " PHW");
         session.send("PRP " + trId + " " + version + " PHM");
         session.send("PRP " + trId + " " + version + " MOB N");
         session.send("PRP " + trId + " " + version + " MBE N");
 
-        // Groups (1 group only)
+        // Groups
         session.send("LSG " + trId + " " + version + " 1 1 0 Friends 0");
 
         try {
