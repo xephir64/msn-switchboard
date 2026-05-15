@@ -1,9 +1,8 @@
 package com.xephir64.switchboard.server.session;
 
 import com.xephir64.switchboard.server.entity.User;
-import com.xephir64.switchboard.server.services.AuthService;
-import com.xephir64.switchboard.server.services.ContactService;
-import com.xephir64.switchboard.server.services.PresenceService;
+import com.xephir64.switchboard.server.repository.UserRepository;
+import com.xephir64.switchboard.server.services.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,18 +12,18 @@ public class ClientSession {
     private final BufferedReader in;
     private final BufferedWriter out;
 
-    private final AuthService authService;
-    private final ContactService contactService;
+    private final DatabaseServices databaseServices;
 
     private String msnProtocol;
 
     private User user;
+    private int listVersion = 255;
+
     public UserStatus status;
 
-    public ClientSession(Socket socket, AuthService authService, ContactService contactService) throws IOException {
+    public ClientSession(Socket socket, DatabaseServices databaseServices) throws IOException {
         this.socket = socket;
-        this.authService = authService;
-        this.contactService = contactService;
+        this.databaseServices = databaseServices;
         try {
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
@@ -37,7 +36,7 @@ public class ClientSession {
         this.msnProtocol = msnP;
     }
 
-    public void send(String response) throws IOException {
+    public synchronized void send(String response) throws IOException {
         System.out.println("Sent: " + response);
         out.write(response + "\r\n");
         out.flush();
@@ -63,11 +62,15 @@ public class ClientSession {
     }
 
     public AuthService getAuthService() {
-        return authService;
+        return databaseServices.getAuthService();
     }
 
     public ContactService getContactService() {
-        return contactService;
+        return databaseServices.getContactService();
+    }
+
+    public UserService getUserService() {
+        return databaseServices.getUserService();
     }
 
     public void setUser(User user) {

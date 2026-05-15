@@ -17,9 +17,7 @@ public class UserRepository {
 
     public User findByEmail(String email) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT id, email, password, display_name FROM user WHERE email = ?"
-            );
+            PreparedStatement stmt = conn.prepareStatement("SELECT id, email, password, display_name FROM user WHERE email = ?");
             stmt.setString(1, email);
 
             ResultSet rs = stmt.executeQuery();
@@ -37,9 +35,7 @@ public class UserRepository {
 
     public User findById(int id) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT id, email, password, display_name FROM user WHERE id = ?"
-            );
+            PreparedStatement stmt = conn.prepareStatement("SELECT id, email, password, display_name FROM user WHERE id = ?");
             stmt.setInt(1, id);
 
             ResultSet rs = stmt.executeQuery();
@@ -57,5 +53,26 @@ public class UserRepository {
 
     public User findFriendById(int userId) throws SQLException {
         return this.findById(userId);
+    }
+
+    public int getListVersion(int userId) throws SQLException {
+        try (Connection conn = db.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT list_version FROM user WHERE id = ?");
+            stmt.setInt(1, userId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("list_version");
+            }
+            return 255;
+        }
+    }
+
+    public void incrementListVersion(int userId) throws SQLException {
+        try (Connection conn = db.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE user SET list_version = list_version + 1 WHERE id = ?");
+            stmt.setInt(1, userId);
+            stmt.executeQuery();
+        }
     }
 }

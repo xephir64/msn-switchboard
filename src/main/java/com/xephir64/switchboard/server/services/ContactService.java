@@ -37,4 +37,15 @@ public class ContactService {
     public String getEmail(int id) throws SQLException {
         return contactRepository.getContactEmail(id);
     }
+
+    public void addContact(User owner, User target, String listType, String displayName) throws SQLException {
+        Contact existing = contactRepository.findContact(owner.getId(), target.getId());
+        if (existing == null) contactRepository.createContact(owner.getId(), target.getId());
+        contactRepository.setList(owner.getId(), target.getId(), listType, true);
+        contactRepository.updateDisplayName(owner.getId(), target.getId(), displayName);
+    }
+
+    public void updateFriendName(User owner, User target, String displayName) throws SQLException {
+        contactRepository.updateDisplayName(owner.getId(), target.getId(), displayName);
+    }
 }
