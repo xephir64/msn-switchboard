@@ -30,7 +30,7 @@ public class SynHandler implements CommandHandler {
 
     private void handleResponseMSNP7(ClientSession session, Command cmd) throws IOException {
         int trId = cmd.getTrId();
-        int version = 255;
+        int version = session.getUserService().getContactVersion(session.getUser().getId());
 
         session.send("SYN " + trId + " " + version);
 
@@ -58,7 +58,6 @@ public class SynHandler implements CommandHandler {
             sendList(session, trId, version, "AL", al);
             sendList(session, trId, version, "BL", bl);
             sendList(session, trId, version, "RL", rl);
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

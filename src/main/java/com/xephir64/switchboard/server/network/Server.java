@@ -31,7 +31,8 @@ public class Server {
             "CHG", new ChgHandler(),
             "OUT", new OutHandler(),
             "ADD", new AddHandler(),
-            "REA", new ReaHandler()
+            "REA", new ReaHandler(),
+            "REM", new RemHandler()
     );
 
     public static void main(String[] args) {
@@ -42,6 +43,7 @@ public class Server {
             while (true) {
                 Socket client = server.accept();
                 new Thread(() -> handleClient(client, databaseServices)).start();
+                if (server.isClosed()) return;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

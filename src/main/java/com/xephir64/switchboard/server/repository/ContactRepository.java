@@ -20,7 +20,7 @@ public class ContactRepository {
 
     public List<Contact> getContacts(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id FROM contact WHERE owner_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE owner_id = ?");
             stmt.setInt(1, userId);
 
             ResultSet rs = stmt.executeQuery();
@@ -30,7 +30,10 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id")
+                        rs.getInt("contact_id"),
+                        rs.getBoolean("is_allow"),
+                        rs.getBoolean("is_forward"),
+                        rs.getBoolean("is_block")
                 ));
             }
 
@@ -40,7 +43,7 @@ public class ContactRepository {
 
     public List<Contact> getAllowList(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id FROM contact WHERE owner_id = ? AND is_allow = true");
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE owner_id = ? AND is_allow = true");
             stmt.setInt(1, userId);
 
             ResultSet rs = stmt.executeQuery();
@@ -50,7 +53,10 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id")
+                        rs.getInt("contact_id"),
+                        rs.getBoolean("is_allow"),
+                        rs.getBoolean("is_forward"),
+                        rs.getBoolean("is_block")
                 ));
             }
 
@@ -60,7 +66,7 @@ public class ContactRepository {
 
     public List<Contact> getForwardList(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id FROM contact WHERE owner_id = ? AND is_forward = true");
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE owner_id = ? AND is_forward = true");
             stmt.setInt(1, userId);
 
             ResultSet rs = stmt.executeQuery();
@@ -70,7 +76,10 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id")
+                        rs.getInt("contact_id"),
+                        rs.getBoolean("is_allow"),
+                        rs.getBoolean("is_forward"),
+                        rs.getBoolean("is_block")
                 ));
             }
 
@@ -80,7 +89,7 @@ public class ContactRepository {
 
     public List<Contact> getBlockList(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id FROM contact WHERE owner_id = ? AND is_block = true");
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE owner_id = ? AND is_block = true");
             stmt.setInt(1, userId);
 
             ResultSet rs = stmt.executeQuery();
@@ -90,7 +99,10 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id")
+                        rs.getInt("contact_id"),
+                        rs.getBoolean("is_allow"),
+                        rs.getBoolean("is_forward"),
+                        rs.getBoolean("is_block")
                 ));
             }
 
@@ -100,7 +112,7 @@ public class ContactRepository {
 
     public List<Contact> getReverseList(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id FROM contact WHERE contact_id = ? AND is_forward = TRUE");
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE contact_id = ? AND is_forward = TRUE");
             stmt.setInt(1, userId);
 
             ResultSet rs = stmt.executeQuery();
@@ -110,7 +122,10 @@ public class ContactRepository {
             while (rs.next()) {
                 contacts.add(new Contact(
                         rs.getInt("owner_id"),
-                        rs.getInt("contact_id")
+                        rs.getInt("contact_id"),
+                        rs.getBoolean("is_allow"),
+                        rs.getBoolean("is_forward"),
+                        rs.getBoolean("is_block")
                 ));
             }
 
@@ -134,13 +149,16 @@ public class ContactRepository {
     public Contact findContact(int ownerId, int contactId) throws SQLException {
 
         try (Connection conn = db.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id FROM contact WHERE owner_id = ? AND contact_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE owner_id = ? AND contact_id = ?");
             stmt.setInt(1, ownerId);
             stmt.setInt(2, contactId);
 
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) return new Contact(rs.getInt("owner_id"), rs.getInt("contact_id"));
+            if (rs.next()) return new Contact(rs.getInt("owner_id"), rs.getInt("contact_id"),
+                    rs.getBoolean("is_allow"),
+                    rs.getBoolean("is_forward"),
+                    rs.getBoolean("is_block"));
             return null;
         }
     }

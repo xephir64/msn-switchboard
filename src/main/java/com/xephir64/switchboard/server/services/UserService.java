@@ -16,8 +16,12 @@ public class UserService {
         return userRepo.findByEmail(email);
     }
 
-    public int getContactVersion(int userId) throws SQLException {
-        return userRepo.getListVersion(userId);
+    public int getContactVersion(int userId) {
+        try {
+            return userRepo.getListVersion(userId);
+        } catch (SQLException e) {
+            return 255; // Don't throw exception, just return the default value
+        }
     }
 
     public int incrementContactVersion(int userId) throws SQLException {

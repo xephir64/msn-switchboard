@@ -48,4 +48,8 @@ public class ContactService {
     public void updateFriendName(User owner, User target, String displayName) throws SQLException {
         contactRepository.updateDisplayName(owner.getId(), target.getId(), displayName);
     }
+
+    public void removeContactFromList(User owner, User target, String listType) throws SQLException {
+        contactRepository.setList(owner.getId(), target.getId(), listType, false);
+    }
 }

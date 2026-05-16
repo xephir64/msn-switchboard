@@ -22,10 +22,13 @@ public class UsrHandler implements CommandHandler {
                 break;
             case "MSNP8", "MSNP9", "MSNP10", "MSNP11", "MSNP12":
                 connectTweener(session, cmd); break;
-            default:
-
+            case "MSNP15": connectSSO(session, cmd); break;
+            default: break;
         }
 
+    }
+
+    private void connectSSO(ClientSession session, Command cmd) {
     }
 
     private void connectTweener(ClientSession session, Command cmd) {
