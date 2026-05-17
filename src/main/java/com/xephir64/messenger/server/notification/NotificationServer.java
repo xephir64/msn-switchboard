@@ -35,6 +35,7 @@ public class NotificationServer {
         DatabaseServices databaseServices = new DatabaseServices(dbConn);
 
         try (ServerSocket server = new ServerSocket(PORT)) {
+            LOGGER.info("Notification Server started on: {}", server.getLocalSocketAddress());
             while (true) {
                 Socket client = server.accept();
                 new Thread(() -> handleClient(client, databaseServices)).start();
@@ -51,7 +52,7 @@ public class NotificationServer {
             String line;
             while (!session.isClosed()) {
                 line = session.readLine();
-                System.out.println("Received: " + line);
+                LOGGER.info("Received: {}", line);
                 Command cmd = CommandParser.parse(line);
 
                 CommandHandler handler = HANDLERS.get(cmd.getName());

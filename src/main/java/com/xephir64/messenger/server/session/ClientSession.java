@@ -2,12 +2,15 @@ package com.xephir64.messenger.server.session;
 
 import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.services.*;
-import com.xephir64.messenger.server.services.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
 
 public class ClientSession {
+    private static final Logger LOGGER = LogManager.getLogger(ClientSession.class.getName());
+
     private final Socket socket;
     private final BufferedReader in;
     private final BufferedWriter out;
@@ -17,8 +20,6 @@ public class ClientSession {
     private String msnProtocol;
 
     private User user;
-    private int listVersion = 255;
-
     public UserStatus status;
 
     public ClientSession(Socket socket, DatabaseServices databaseServices) throws IOException {
@@ -37,7 +38,7 @@ public class ClientSession {
     }
 
     public synchronized void send(String response) throws IOException {
-        System.out.println("Sent: " + response);
+        LOGGER.info("Sent: {}", response);
         out.write(response + "\r\n");
         out.flush();
     }
