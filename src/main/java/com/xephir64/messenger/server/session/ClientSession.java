@@ -33,6 +33,18 @@ public class ClientSession {
         }
     }
 
+    public ClientSession(Socket socket) throws IOException {
+        this.socket = socket;
+        this.databaseServices = null;
+        try {
+            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.out = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
+    }
+
+
     public void setMsnProtocol(String msnP) {
         this.msnProtocol = msnP;
     }

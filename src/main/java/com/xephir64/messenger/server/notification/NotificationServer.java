@@ -2,7 +2,7 @@ package com.xephir64.messenger.server.notification;
 
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.protocol.CommandParser;
-import com.xephir64.messenger.server.protocol.handler.*;
+import com.xephir64.messenger.server.protocol.handler.notification.*;
 import com.xephir64.messenger.server.services.DatabaseServices;
 import com.xephir64.messenger.server.session.ClientSession;
 import org.apache.logging.log4j.LogManager;
@@ -13,24 +13,26 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
-public class NotificationServer {
+public class NotificationServer implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(NotificationServer.class.getName());
     private static final int PORT = 1863;
 
-    private static final Map<String, CommandHandler> HANDLERS = Map.of(
-            "VER", new VerHandler(),
-            "INF", new InfHandler(),
-            "USR", new UsrHandler(),
-            "CVR", new CvrHandler(),
-            "SYN", new SynHandler(),
-            "CHG", new ChgHandler(),
-            "OUT", new OutHandler(),
-            "ADD", new AddHandler(),
-            "REA", new ReaHandler(),
-            "REM", new RemHandler()
+    private static final Map<String, CommandHandler> HANDLERS =  Map.ofEntries(
+            Map.entry("VER", new VerHandler()),
+            Map.entry("INF", new InfHandler()),
+            Map.entry("USR", new UsrHandler()),
+            Map.entry("CVR", new CvrHandler()),
+            Map.entry("SYN", new SynHandler()),
+            Map.entry("CHG", new ChgHandler()),
+            Map.entry("OUT", new OutHandler()),
+            Map.entry("ADD", new AddHandler()),
+            Map.entry("REA", new ReaHandler()),
+            Map.entry("REM", new RemHandler()),
+            Map.entry("XFR", new XfrHandler())
     );
 
-    public static void main(String[] args) {
+    @Override
+    public void run() {
         DatabaseConnection dbConn = new DatabaseConnection();
         DatabaseServices databaseServices = new DatabaseServices(dbConn);
 
@@ -38,7 +40,7 @@ public class NotificationServer {
             LOGGER.info("Notification Server started on: {}", server.getLocalSocketAddress());
             while (true) {
                 Socket client = server.accept();
-                new Thread(() -> handleClient(client, databaseServices)).start();
+                Thread.ofVirtual().start(() -> handleClient(client, databaseServices));
                 if (server.isClosed()) return;
             }
         } catch (IOException e) {
@@ -46,7 +48,7 @@ public class NotificationServer {
         }
     }
 
-    private static void handleClient(Socket socket, DatabaseServices databaseServices) {
+    private void handleClient(Socket socket, DatabaseServices databaseServices) {
         try {
             ClientSession session = new ClientSession(socket, databaseServices);
             String line;
