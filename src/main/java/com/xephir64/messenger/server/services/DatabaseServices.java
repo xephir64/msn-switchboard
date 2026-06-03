@@ -1,6 +1,6 @@
 package com.xephir64.messenger.server.services;
 
-import com.xephir64.messenger.server.notification.DatabaseConnection;
+import com.xephir64.messenger.server.DatabaseConnection;
 import com.xephir64.messenger.server.repository.ContactRepository;
 import com.xephir64.messenger.server.repository.UserRepository;
 

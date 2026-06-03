@@ -14,18 +14,25 @@ import java.util.Objects;
 
 public class UsrHandler implements CommandHandler {
     public void handle(ClientSession session, Command cmd) throws IOException {
-        List<String> args = cmd.getArgs();
-        switch(session.getMsnProtocol()) {
-            case "MSNP7", "MSNP6", "MSNP5", "MSNP4", "MSNP3", "MSNP2":
-                if (args.size() >= 2 && Objects.equals(args.get(1), "I")) handleChallenge(session, cmd);
-                if (args.size() >= 2 && Objects.equals(args.get(1), "S")) checkPassword(session, cmd);
-                break;
-            case "MSNP8", "MSNP9", "MSNP10", "MSNP11", "MSNP12":
-                connectTweener(session, cmd); break;
-            case "MSNP15": connectSSO(session, cmd); break;
+        String authType = cmd.getArgs().getFirst();
+        switch (authType) {
+            case "CTP": connectCTP(session, cmd);break;
+            case "MD5": connectMD5(session, cmd); break;
+            case "TWN": connectTweener(session, cmd);break;
+            case "SSO": connectSSO(session, cmd);break;
             default: break;
         }
 
+
+    }
+
+    private void connectCTP(ClientSession session, Command cmd) {
+    }
+
+    private void connectMD5(ClientSession session, Command cmd) throws IOException {
+        List<String> args = cmd.getArgs();
+        if (args.size() >= 2 && Objects.equals(args.get(1), "I")) handleChallenge(session, cmd);
+        if (args.size() >= 2 && Objects.equals(args.get(1), "S")) checkPassword(session, cmd);
     }
 
     private void connectSSO(ClientSession session, Command cmd) {

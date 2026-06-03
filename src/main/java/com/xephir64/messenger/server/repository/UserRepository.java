@@ -1,7 +1,7 @@
 package com.xephir64.messenger.server.repository;
 
 import com.xephir64.messenger.server.entity.User;
-import com.xephir64.messenger.server.notification.DatabaseConnection;
+import com.xephir64.messenger.server.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

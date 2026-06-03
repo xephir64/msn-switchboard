@@ -1,4 +1,4 @@
-package com.xephir64.messenger.server.notification;
+package com.xephir64.messenger.server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -8,12 +8,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientSession {
+public abstract class ClientSession {
     private static final Logger LOGGER = LogManager.getLogger(ClientSession.class.getName());
 
-    private final Socket socket;
-    private final BufferedReader in;
-    private final BufferedWriter out;
+    final Socket socket;
+    final BufferedReader in;
+    final BufferedWriter out;
 
     private final DatabaseServices databaseServices;
 
@@ -51,12 +51,24 @@ public class ClientSession {
 
     public synchronized void send(String response) throws IOException {
         LOGGER.info("Sent: {}", response);
+
         out.write(response + "\r\n");
         out.flush();
     }
 
     public String readLine() throws IOException {
         return in.readLine();
+    }
+
+    public String readBytes(int length) throws IOException {
+        char[] buffer = new char[length];
+        int read = 0;
+        while (read < length) {
+            int n = in.read(buffer, read, length - read);
+            if (n == -1) throw new EOFException();
+            read += n;
+        }
+        return new String(buffer);
     }
 
     public String getMsnProtocol() {
