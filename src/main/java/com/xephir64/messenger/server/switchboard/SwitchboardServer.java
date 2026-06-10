@@ -5,7 +5,6 @@ import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.protocol.CommandParser;
 import com.xephir64.messenger.server.protocol.handler.switchboard.*;
 import com.xephir64.messenger.server.services.DatabaseServices;
-import com.xephir64.messenger.server.session.ClientSessionSwitchboard;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +43,7 @@ public class SwitchboardServer implements Runnable {
 
     private void handleSbClient(Socket client, DatabaseServices databaseServices) {
         try {
-            ClientSessionSwitchboard session = new ClientSessionSwitchboard(client, databaseServices);
+            SwitchboardSession session = new SwitchboardSession(client, databaseServices);
             String line;
             while (!session.isClosed()) {
                 line = session.readLine();

@@ -1,4 +1,4 @@
-package com.xephir64.messenger.server.session;
+package com.xephir64.messenger.server.notification.session;
 
 public enum UserStatus {
     NLN,

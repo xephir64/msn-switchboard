@@ -3,7 +3,7 @@ package com.xephir64.messenger.server.protocol.handler.notification;
 import com.xephir64.messenger.server.entity.Contact;
 import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.protocol.Command;
-import com.xephir64.messenger.server.session.ClientSession;
+import com.xephir64.messenger.server.notification.session.ClientSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

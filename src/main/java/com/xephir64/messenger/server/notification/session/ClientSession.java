@@ -1,4 +1,4 @@
-package com.xephir64.messenger.server.session;
+package com.xephir64.messenger.server.notification.session;
 
 import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.services.*;
@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.net.Socket;
 
-public abstract class ClientSession {
+public class ClientSession {
     private static final Logger LOGGER = LogManager.getLogger(ClientSession.class.getName());
 
     final Socket socket;

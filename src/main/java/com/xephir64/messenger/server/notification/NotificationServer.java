@@ -5,7 +5,7 @@ import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.protocol.CommandParser;
 import com.xephir64.messenger.server.protocol.handler.notification.*;
 import com.xephir64.messenger.server.services.DatabaseServices;
-import com.xephir64.messenger.server.session.ClientSessionNotification;
+import com.xephir64.messenger.server.notification.session.ClientSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +51,7 @@ public class NotificationServer implements Runnable {
 
     private void handleClient(Socket socket, DatabaseServices databaseServices) {
         try {
-            ClientSessionNotification session = new ClientSessionNotification(socket, databaseServices);
+            ClientSession session = new ClientSession(socket, databaseServices);
             String line;
             while (!session.isClosed()) {
                 line = session.readLine();

@@ -1,10 +1,11 @@
 package com.xephir64.messenger.server.switchboard;
 
-import com.xephir64.messenger.server.session.ClientSession;
-import com.xephir64.messenger.server.session.ClientSessionSwitchboard;
+import com.xephir64.messenger.server.notification.session.ClientSession;
+import com.xephir64.messenger.server.services.PresenceService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Conversation {
     private final String authToken;
     private final Set<String> allowedUsers = ConcurrentHashMap.newKeySet();
-    private final List<ClientSessionSwitchboard> participants = new CopyOnWriteArrayList<>();
+    private final List<SwitchboardSession> participants = new CopyOnWriteArrayList<>();
     private final int sessionId;
 
     private static final AtomicInteger NEXT_ID = new AtomicInteger(1000);
@@ -35,8 +36,8 @@ public class Conversation {
         return allowedUsers.contains(email);
     }
 
-    public void addParticipant(ClientSessionSwitchboard session) {
-        for (ClientSessionSwitchboard participant : participants) {
+    public void addParticipant(SwitchboardSession session) {
+        for (SwitchboardSession participant : participants) {
             try {
                 participant.send("JOI " + session.getUser().getEmail() + " " + session.getUser().getDisplayName());
             } catch (IOException e) {
@@ -46,7 +47,7 @@ public class Conversation {
         participants.add(session);
     }
 
-    public List<ClientSessionSwitchboard> getParticipants() {
+    public List<SwitchboardSession> getParticipants() {
         return participants;
     }
 
@@ -54,12 +55,19 @@ public class Conversation {
         return this.sessionId;
     }
 
-    public void removeParticipant(ClientSessionSwitchboard session) {
+    public void removeParticipant(SwitchboardSession session) throws IOException {
         participants.remove(session);
+        sendBye(session.getUser().getEmail());
     }
 
-    public void broadcastMessage(ClientSession sender, String mimePayload, int length) throws IOException {
-        for (ClientSessionSwitchboard participant : participants) {
+    private void sendBye(String email) throws IOException {
+        for (SwitchboardSession participant: participants) {
+            participant.send("BYE " + email);
+        }
+    }
+
+    public void broadcastMessage(SwitchboardSession sender, String mimePayload, int length) throws IOException {
+        for (SwitchboardSession participant : participants) {
             if (participant == sender)
                 continue;
 
@@ -67,4 +75,5 @@ public class Conversation {
             participant.sendRaw(mimePayload);
         }
     }
+
 }

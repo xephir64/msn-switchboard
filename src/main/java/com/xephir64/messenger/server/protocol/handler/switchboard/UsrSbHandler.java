@@ -2,9 +2,9 @@ package com.xephir64.messenger.server.protocol.handler.switchboard;
 
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.services.UserService;
-import com.xephir64.messenger.server.session.ClientSessionSwitchboard;
 import com.xephir64.messenger.server.switchboard.Conversation;
 import com.xephir64.messenger.server.switchboard.SwitchboardManager;
+import com.xephir64.messenger.server.switchboard.SwitchboardSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class UsrSbHandler implements CommandSbHandler {
 
     @Override
-    public void handle(ClientSessionSwitchboard session, Command cmd) throws IOException {
+    public void handle(SwitchboardSession session, Command cmd) throws IOException {
         String email = cmd.getArgs().getFirst();
         String token = cmd.getArgs().get(1);
 

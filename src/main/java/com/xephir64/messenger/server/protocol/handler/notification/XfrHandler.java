@@ -1,12 +1,11 @@
 package com.xephir64.messenger.server.protocol.handler.notification;
 
 import com.xephir64.messenger.server.protocol.Command;
-import com.xephir64.messenger.server.session.ClientSession;
+import com.xephir64.messenger.server.notification.session.ClientSession;
 import com.xephir64.messenger.server.switchboard.Conversation;
 import com.xephir64.messenger.server.switchboard.SwitchboardManager;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class XfrHandler implements CommandHandler {
 

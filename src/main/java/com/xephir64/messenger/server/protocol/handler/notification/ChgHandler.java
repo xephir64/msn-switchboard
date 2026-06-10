@@ -1,8 +1,8 @@
 package com.xephir64.messenger.server.protocol.handler.notification;
 
 import com.xephir64.messenger.server.protocol.Command;
-import com.xephir64.messenger.server.session.ClientSession;
-import com.xephir64.messenger.server.session.UserStatus;
+import com.xephir64.messenger.server.notification.session.ClientSession;
+import com.xephir64.messenger.server.notification.session.UserStatus;
 
 import java.io.IOException;
 
