@@ -75,4 +75,13 @@ public class UserRepository {
             stmt.executeQuery();
         }
     }
+
+    public boolean isThisUserExist(String email) throws SQLException {
+        try (Connection conn = db.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT email FROM user WHERE email = ?");
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        }
+    }
 }

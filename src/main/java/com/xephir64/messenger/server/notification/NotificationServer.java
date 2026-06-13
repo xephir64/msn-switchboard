@@ -55,12 +55,14 @@ public class NotificationServer implements Runnable {
             String line;
             while (!session.isClosed()) {
                 line = session.readLine();
+                if (line == null) continue;
                 LOGGER.info("Received: {}", line);
                 Command cmd = CommandParser.parse(line);
-
-                CommandHandler handler = HANDLERS.get(cmd.getName());
-                if (handler != null) handler.handle(session, cmd);
-                else LOGGER.error("{} command is not implemented yet.", cmd.getName());
+                if (cmd != null) {
+                    CommandHandler handler = HANDLERS.get(cmd.getName());
+                    if (handler != null) handler.handle(session, cmd);
+                    else LOGGER.error("{} command is not implemented yet.", cmd.getName());
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
