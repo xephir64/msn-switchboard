@@ -29,6 +29,6 @@ public class CalSbHandler implements CommandSbHandler {
             return;
         }
 
-        nsSession.send("RNG " + conv.getSessionId() + " 192.168.11.1:1864 " + "CKI " + conv.getAuthToken() + " " + session.getUser().getEmail() + " " + session.getUser().getDisplayName());
+        nsSession.send("RNG " + conv.getSessionId() + " 192.168.1.10:1864 " + "CKI " + conv.getAuthToken() + " " + session.getUser().getEmail() + " " + session.getUser().getDisplayName());
     }
 }

@@ -22,6 +22,6 @@ public class XfrHandler implements CommandHandler {
         Conversation c = SwitchboardManager.createConversation();
         c.allowUser(session.getUser().getEmail());
 
-        session.send("XFR " + cmd.getTrId() + " SB 192.168.11.1:1864 CKI " + c.getAuthToken());
+        session.send("XFR " + cmd.getTrId() + " SB 192.168.1.10:1864 CKI " + c.getAuthToken());
     }
 }

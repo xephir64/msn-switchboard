@@ -79,6 +79,7 @@ public class UsrHandler implements CommandHandler {
             String userEmail = json.getString("email");
 
             User user = session.getAuthService().login(userEmail);
+            session.setUser(user);
             session.send("USR " + cmd.getTrId() + " OK " + user.getEmail() + " " + user.getDisplayName() + " 1 0");
         } catch (SQLException e) {
             session.send("911 " + cmd.getTrId());

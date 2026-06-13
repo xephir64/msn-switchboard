@@ -60,17 +60,6 @@ public class ClientSession {
         return in.readLine();
     }
 
-    public String readBytes(int length) throws IOException {
-        char[] buffer = new char[length];
-        int read = 0;
-        while (read < length) {
-            int n = in.read(buffer, read, length - read);
-            if (n == -1) throw new EOFException();
-            read += n;
-        }
-        return new String(buffer);
-    }
-
     public String getMsnProtocol() {
         return this.msnProtocol;
     }

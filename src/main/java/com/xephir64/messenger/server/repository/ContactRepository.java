@@ -109,6 +109,18 @@ public class ContactRepository {
         }
     }
 
+    public boolean isInReverseList(int userId, int contactId) throws SQLException {
+        try (Connection conn = db.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward FROM contact WHERE contact_id = ? AND owner_id = ? AND is_forward = TRUE");
+            stmt.setInt(1, userId);
+            stmt.setInt(2, contactId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            return rs.next();
+        }
+    }
+
     public List<Contact> getReverseList(int userId) throws SQLException {
         try (Connection conn = db.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement("SELECT owner_id, contact_id, is_forward, is_allow, is_block FROM contact WHERE contact_id = ? AND is_forward = TRUE");

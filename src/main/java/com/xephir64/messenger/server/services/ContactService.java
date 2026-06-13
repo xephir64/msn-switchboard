@@ -34,6 +34,14 @@ public class ContactService {
         return contactRepository.getBlockList(user.getId());
     }
 
+    public boolean isInReverseList(User user, int owner_id) {
+        try {
+            return contactRepository.isInReverseList(user.getId(), owner_id);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
     public String getEmail(int id) throws SQLException {
         return contactRepository.getContactEmail(id);
     }
