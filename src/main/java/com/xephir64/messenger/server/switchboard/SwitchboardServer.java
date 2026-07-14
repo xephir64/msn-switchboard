@@ -3,8 +3,8 @@ package com.xephir64.messenger.server.switchboard;
 import com.xephir64.messenger.server.DatabaseConnection;
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.protocol.CommandParser;
-import com.xephir64.messenger.server.protocol.handler.switchboard.*;
 import com.xephir64.messenger.server.services.DatabaseServices;
+import com.xephir64.messenger.server.switchboard.protocol.handlers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,15 +15,20 @@ import java.util.Map;
 
 public class SwitchboardServer implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(SwitchboardServer.class.getName());
+    private final String ip;
     public static final int PORT = 1864;
 
-    private static final Map<String, CommandSbHandler> HANDLERS =  Map.ofEntries(
-            Map.entry("USR", new UsrSbHandler()),
-            Map.entry("CAL", new CalSbHandler()),
-            Map.entry("OUT", new OutSbHandler()),
-            Map.entry("ANS", new AnsSbHandler()),
-            Map.entry("MSG", new MsgSbHandler())
+    private static final Map<String, CommandHandler> HANDLERS =  Map.ofEntries(
+            Map.entry("USR", new UsrHandler()),
+            Map.entry("CAL", new CalHandler()),
+            Map.entry("OUT", new OutHandler()),
+            Map.entry("ANS", new AnsHandler()),
+            Map.entry("MSG", new MsgHandler())
     );
+
+    public SwitchboardServer(String ip) {
+        this.ip = ip;
+    }
 
     public void run() {
         DatabaseConnection dbConn = new DatabaseConnection();
@@ -50,7 +55,7 @@ public class SwitchboardServer implements Runnable {
                 LOGGER.info("Received: {}", line);
                 Command cmd = CommandParser.parse(line);
 
-                CommandSbHandler handler = HANDLERS.get(cmd.getName());
+                CommandHandler handler = HANDLERS.get(cmd.getName());
                 if (handler != null) handler.handle(session, cmd);
                 else LOGGER.error("{} command is not implemented yet.", cmd.getName());
             }

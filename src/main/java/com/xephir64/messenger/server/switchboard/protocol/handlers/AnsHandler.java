@@ -1,4 +1,4 @@
-package com.xephir64.messenger.server.protocol.handler.switchboard;
+package com.xephir64.messenger.server.switchboard.protocol.handlers;
 
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.switchboard.Conversation;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class AnsSbHandler implements CommandSbHandler {
+public class AnsHandler implements CommandHandler {
     @Override
     public void handle(SwitchboardSession session, Command cmd) throws IOException {
         String email = cmd.getArgs().getFirst();

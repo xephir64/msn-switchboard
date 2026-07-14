@@ -1,9 +1,9 @@
 package com.xephir64.messenger.server.notification;
 
 import com.xephir64.messenger.server.DatabaseConnection;
+import com.xephir64.messenger.server.notification.protocol.handlers.*;
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.protocol.CommandParser;
-import com.xephir64.messenger.server.protocol.handler.notification.*;
 import com.xephir64.messenger.server.services.DatabaseServices;
 import com.xephir64.messenger.server.notification.session.ClientSession;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +17,7 @@ import java.util.Map;
 public class NotificationServer implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(NotificationServer.class.getName());
     private static final int PORT = 1863;
+    public final String switchboardIP;
 
     private static final Map<String, CommandHandler> HANDLERS =  Map.ofEntries(
             Map.entry("VER", new VerHandler()),
@@ -31,6 +32,10 @@ public class NotificationServer implements Runnable {
             Map.entry("REM", new RemHandler()),
             Map.entry("XFR", new XfrHandler())
     );
+
+    public NotificationServer(String switchboardIP) {
+        this.switchboardIP = switchboardIP;
+    }
 
     @Override
     public void run() {

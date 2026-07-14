@@ -1,4 +1,4 @@
-package com.xephir64.messenger.server.notification.passport.service;
+package com.xephir64.messenger.server.notification.authentication.passport.service;
 
 import org.apache.commons.codec.binary.Base64;
 

@@ -1,4 +1,4 @@
-package com.xephir64.messenger.server.protocol.handler.switchboard;
+package com.xephir64.messenger.server.switchboard.protocol.handlers;
 
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.services.UserService;
@@ -9,7 +9,7 @@ import com.xephir64.messenger.server.switchboard.SwitchboardSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class UsrSbHandler implements CommandSbHandler {
+public class UsrHandler implements CommandHandler {
 
     @Override
     public void handle(SwitchboardSession session, Command cmd) throws IOException {

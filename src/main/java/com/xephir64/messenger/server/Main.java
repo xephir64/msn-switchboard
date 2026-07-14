@@ -7,8 +7,10 @@ public class Main {
     public static void main(String[] args) {
         Thread.Builder builder = Thread.ofVirtual().name("msn-server-", 0);
 
-        NotificationServer nb = new NotificationServer();
-        SwitchboardServer sb = new SwitchboardServer();
+        String ip = "192.168.1.10";
+
+        NotificationServer nb = new NotificationServer(ip);
+        SwitchboardServer sb = new SwitchboardServer(ip);
 
         Thread notificationThread = builder.start(nb);
         Thread switchboardThread = builder.start(sb);

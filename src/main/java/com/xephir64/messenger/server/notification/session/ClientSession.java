@@ -11,9 +11,9 @@ import java.net.Socket;
 public class ClientSession {
     private static final Logger LOGGER = LogManager.getLogger(ClientSession.class.getName());
 
-    final Socket socket;
-    final BufferedReader in;
-    final BufferedWriter out;
+    private final Socket socket;
+    private final BufferedReader in;
+    private final BufferedWriter out;
 
     private final DatabaseServices databaseServices;
 
