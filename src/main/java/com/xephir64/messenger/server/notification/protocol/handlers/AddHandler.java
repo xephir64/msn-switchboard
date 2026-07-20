@@ -3,11 +3,20 @@ package com.xephir64.messenger.server.notification.protocol.handlers;
 import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.notification.session.ClientSession;
+import com.xephir64.messenger.server.services.ContactService;
+import com.xephir64.messenger.server.services.UserService;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class AddHandler implements CommandHandler {
+    private final UserService userService;
+    private final ContactService contactService;
+
+    public AddHandler(UserService user, ContactService contactService) {
+        this.userService = user;
+        this.contactService = contactService;
+    }
     @Override
     public void handle(ClientSession session, Command cmd) throws IOException {
         String listType = cmd.getArgs().getFirst();
@@ -15,11 +24,11 @@ public class AddHandler implements CommandHandler {
         String displayName = cmd.getArgs().get(2);
 
         try {
-            User target = session.getUserService().findByEmail(email);
+            User target = userService.findByEmail(email);
             if (target == null) session.send("201 " + cmd.getTrId());
             else {
-                session.getContactService().addContact(session.getUser(), target, listType, displayName);
-                int version =  session.getUserService().incrementContactVersion(session.getUser().getId());
+                contactService.addContact(session.getUser(), target, listType, displayName);
+                int version = userService.incrementContactVersion(session.getUser().getId());
                 session.send("ADD " + cmd.getTrId() + " " + listType + " " + version + " " + target.getEmail() + " " + target.getDisplayName());
             }
         } catch (SQLException e) {

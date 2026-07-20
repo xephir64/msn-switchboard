@@ -3,6 +3,7 @@ package com.xephir64.messenger.server.notification.authentication;
 import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.notification.session.ClientSession;
 import com.xephir64.messenger.server.protocol.Command;
+import com.xephir64.messenger.server.services.AuthService;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import static com.xephir64.messenger.server.notification.authentication.passport
 import static com.xephir64.messenger.server.notification.authentication.passport.service.CryptoService.validateTicket;
 
 public class TWNAuthenticationProvider implements AuthenticationProvider {
+    private final AuthService authService;
     @Override
     public String getName() {
         return "TWN";
@@ -26,12 +28,16 @@ public class TWNAuthenticationProvider implements AuthenticationProvider {
         if (args.get(1).equals("S")) handleTwnTicket(session, command);
     }
 
+    public TWNAuthenticationProvider(AuthService authService) {
+        this.authService = authService;
+    }
+
 
     private void handleTwnInitial(ClientSession session, Command cmd) throws IOException {
         String email = cmd.getArgs().get(2);
 
         try {
-            boolean user = session.getAuthService().isThisUserExist(email);
+            boolean user = authService.isThisUserExist(email);
             if (!user) {
                 session.send("911 " + cmd.getTrId());
                 return;
@@ -57,7 +63,7 @@ public class TWNAuthenticationProvider implements AuthenticationProvider {
         try {
             String userEmail = json.getString("email");
 
-            User user = session.getAuthService().login(userEmail);
+            User user = authService.login(userEmail);
             session.setUser(user);
             session.send("USR " + cmd.getTrId() + " OK " + user.getEmail() + " " + user.getDisplayName() + " 1 0");
         } catch (SQLException e) {

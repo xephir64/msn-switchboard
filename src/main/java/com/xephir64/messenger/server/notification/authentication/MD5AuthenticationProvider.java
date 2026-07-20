@@ -3,6 +3,7 @@ package com.xephir64.messenger.server.notification.authentication;
 import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.notification.session.ClientSession;
 import com.xephir64.messenger.server.protocol.Command;
+import com.xephir64.messenger.server.services.AuthService;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
@@ -13,9 +14,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class MD5AuthenticationProvider implements AuthenticationProvider {
+    private final AuthService authService;
     @Override
     public String getName() {
         return "MD5";
+    }
+
+    public MD5AuthenticationProvider(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -52,7 +58,7 @@ public class MD5AuthenticationProvider implements AuthenticationProvider {
         User user;
 
         try {
-            user = session.getAuthService().login(email);
+            user = authService.login(email);
         } catch (SQLException e) {
             return;
         }

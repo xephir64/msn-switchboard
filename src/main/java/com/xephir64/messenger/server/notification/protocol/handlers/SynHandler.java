@@ -5,6 +5,7 @@ import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.notification.session.ClientSession;
 import com.xephir64.messenger.server.services.ContactService;
+import com.xephir64.messenger.server.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +18,9 @@ import java.util.Objects;
 
 public class SynHandler implements CommandHandler {
     private static final Logger LOGGER = LogManager.getLogger(SynHandler.class.getName());
+    private final ContactService contactService;
+    private final UserService userService;
+
     @Override
     public void handle(ClientSession session, Command cmd) throws IOException {
         switch(session.getMsnProtocol()) {
@@ -26,9 +30,13 @@ public class SynHandler implements CommandHandler {
         }
     }
 
+    public SynHandler(ContactService contactService, UserService userService) {
+        this.contactService = contactService;
+        this.userService = userService;
+    }
+
     private void handleResponseMSNP8(ClientSession session, Command cmd) throws IOException {
         try {
-            ContactService contactService = session.getContactService();
             List<Contact> contactList = contactService.getContacts(session.getUser());
             List<Contact> rl = contactService.getReverseContacts(session.getUser());
 
@@ -39,18 +47,18 @@ public class SynHandler implements CommandHandler {
                 if (contact.forward()) listBit += 1;
                 if (contact.allow()) listBit += 2;
                 if (contact.blocked()) listBit += 4;
-                User contactUser = session.getAuthService().getFriendUser(contact.contactId());
+                User contactUser = userService.getFriendUser(contact.contactId());
                 contacts.put(contactUser, listBit);
             }
 
             for (Contact contact : rl) {
-                User contactUser = session.getAuthService().getFriendUser(contact.ownerId());
+                User contactUser = userService.getFriendUser(contact.ownerId());
                 if (contacts.containsKey(contactUser)) contacts.replace(contactUser, contacts.get(contactUser) + 8);
                 else contacts.put(contactUser, 8);
             }
 
             int trId = cmd.getTrId();
-            int version = session.getUserService().getContactVersion(session.getUser().getId());
+            int version = userService.getContactVersion(session.getUser().getId());
             int totalLst = contacts.size();
             int totalLsg = 1; // Only one static group
 
@@ -80,7 +88,7 @@ public class SynHandler implements CommandHandler {
 
     private void handleResponseMSNP7(ClientSession session, Command cmd) throws IOException {
         int trId = cmd.getTrId();
-        int version = session.getUserService().getContactVersion(session.getUser().getId());
+        int version = userService.getContactVersion(session.getUser().getId());
 
         session.send("SYN " + trId + " " + version);
 
@@ -99,10 +107,10 @@ public class SynHandler implements CommandHandler {
         session.send("LSG " + trId + " " + version + " 1 1 0 Friends 0");
 
         try {
-            List<Contact> fl = session.getContactService().getForwardContacts(session.getUser());
-            List<Contact> al = session.getContactService().getAllowContacts(session.getUser());
-            List<Contact> bl = session.getContactService().getBlockedContacts(session.getUser());
-            List<Contact> rl = session.getContactService().getReverseContacts(session.getUser());
+            List<Contact> fl = contactService.getForwardContacts(session.getUser());
+            List<Contact> al = contactService.getAllowContacts(session.getUser());
+            List<Contact> bl = contactService.getBlockedContacts(session.getUser());
+            List<Contact> rl = contactService.getReverseContacts(session.getUser());
 
             sendList(session, trId, version, "FL", fl);
             sendList(session, trId, version, "AL", al);
@@ -127,7 +135,7 @@ public class SynHandler implements CommandHandler {
             int id = c.contactId();
             if (Objects.equals(listType, "RL")) id = c.ownerId();
 
-            User relUser = session.getAuthService().getFriendUser(id);
+            User relUser = userService.getFriendUser(id);
 
             String email = relUser.getEmail();
             String name = relUser.getDisplayName();

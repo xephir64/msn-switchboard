@@ -18,14 +18,11 @@ public class SwitchboardSession {
     final BufferedReader in;
     final BufferedWriter out;
 
-    private final DatabaseServices databaseServices;
-
     private User user;
     private Conversation conversation;
 
-    public SwitchboardSession(Socket socket, DatabaseServices databaseServices) throws IOException {
+    public SwitchboardSession(Socket socket) throws IOException {
         this.socket = socket;
-        this.databaseServices = databaseServices;
         try {
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
@@ -40,18 +37,6 @@ public class SwitchboardSession {
 
     public Conversation getConversation() {
         return conversation;
-    }
-
-    public AuthService getAuthService() {
-        return databaseServices.getAuthService();
-    }
-
-    public ContactService getContactService() {
-        return databaseServices.getContactService();
-    }
-
-    public UserService getUserService() {
-        return databaseServices.getUserService();
     }
 
     public void setUser(User user) {

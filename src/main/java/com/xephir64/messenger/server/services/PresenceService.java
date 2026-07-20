@@ -11,46 +11,51 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PresenceService {
+    private final ContactService contactService;
+    private final UserService userService;
     private static final Map<String, ClientSession> onlineUsers = new ConcurrentHashMap<>();
 
-    private PresenceService() {
+    public PresenceService(ContactService contactService, UserService userService) {
+        this.contactService = contactService;
+        this.userService = userService;
     }
 
-    public static void setOnline(ClientSession session) {
+    public void setOnline(ClientSession session) {
         onlineUsers.put(session.getUser().getEmail(), session);
         notifyContacts(session);
         sendOnlineContacts(session);
     }
 
-    public static void setOffline(ClientSession session) {
+    public void setOffline(ClientSession session) {
         onlineUsers.remove(session.getUser().getEmail());
         notifyOffline(session);
     }
 
-    public static ClientSession getSession(String email) {
+    public ClientSession getSession(String email) {
         return onlineUsers.get(email);
     }
 
-    public static boolean isOnline(String email) {
+    public boolean isOnline(String email) {
         return onlineUsers.containsKey(email);
     }
 
-    private static void notifyContacts(ClientSession session) {
+    private void notifyContacts(ClientSession session) {
         try {
-            List<Contact> contacts = session.getContactService().getReverseContacts(session.getUser());
+            List<Contact> contacts = contactService.getReverseContacts(session.getUser());
             for (Contact c : contacts) {
-                ClientSession other = PresenceService.getSession(session.getContactService().getEmail(c.ownerId()));
+                ClientSession other = getSession(contactService.getEmail(c.ownerId()));
                 if (other != null) other.send("NLN " + session.getMsnStatus() + " " + session.getUser().getEmail() + " " + session.getUser().getDisplayName());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private static void notifyOffline(ClientSession session) {
+
+    private void notifyOffline(ClientSession session) {
         try {
-            List<Contact> contacts = session.getContactService().getReverseContacts(session.getUser());
+            List<Contact> contacts = contactService.getReverseContacts(session.getUser());
             for (Contact c : contacts) {
-                ClientSession other = PresenceService.getSession(session.getContactService().getEmail(c.ownerId()));
+                ClientSession other = getSession(contactService.getEmail(c.ownerId()));
                 if (other != null) other.send("FLN " + session.getUser().getEmail());
             }
         } catch (Exception e) {
@@ -58,11 +63,11 @@ public class PresenceService {
         }
     }
 
-    private static void sendOnlineContacts(ClientSession session)  {
+    private void sendOnlineContacts(ClientSession session)  {
         try {
-            List<Contact> contacts = session.getContactService().getForwardContacts(session.getUser());
+            List<Contact> contacts = contactService.getForwardContacts(session.getUser());
             for (Contact c : contacts) {
-                User u = session.getAuthService().getFriendUser(c.contactId());
+                User u = userService.getFriendUser(c.contactId());
                 ClientSession online = getSession(u.getEmail());
                 if (online != null) session.send("NLN " + online.getMsnStatus() + " " + u.getEmail() + " " + u.getDisplayName());
             }

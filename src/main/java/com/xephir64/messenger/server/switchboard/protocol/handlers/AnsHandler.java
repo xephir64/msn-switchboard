@@ -1,6 +1,8 @@
 package com.xephir64.messenger.server.switchboard.protocol.handlers;
 
+import com.xephir64.messenger.server.entity.User;
 import com.xephir64.messenger.server.protocol.Command;
+import com.xephir64.messenger.server.services.UserService;
 import com.xephir64.messenger.server.switchboard.Conversation;
 import com.xephir64.messenger.server.switchboard.SwitchboardManager;
 import com.xephir64.messenger.server.switchboard.SwitchboardSession;
@@ -10,6 +12,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class AnsHandler implements CommandHandler {
+    private final UserService userService;
+
+    public AnsHandler(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public void handle(SwitchboardSession session, Command cmd) throws IOException {
         String email = cmd.getArgs().getFirst();
@@ -19,7 +27,7 @@ public class AnsHandler implements CommandHandler {
         Conversation conv = SwitchboardManager.getConversation(token);
 
         try {
-            session.setUser(session.getUserService().findByEmail(email));
+            session.setUser(userService.findByEmail(email));
         } catch (SQLException e) {
             session.close();
             return;

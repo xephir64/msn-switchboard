@@ -4,7 +4,7 @@ import com.xephir64.messenger.server.DatabaseConnection;
 import com.xephir64.messenger.server.notification.protocol.handlers.*;
 import com.xephir64.messenger.server.protocol.Command;
 import com.xephir64.messenger.server.protocol.CommandParser;
-import com.xephir64.messenger.server.services.DatabaseServices;
+import com.xephir64.messenger.server.services.*;
 import com.xephir64.messenger.server.notification.session.ClientSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,36 +17,40 @@ import java.util.Map;
 public class NotificationServer implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(NotificationServer.class.getName());
     private static final int PORT = 1863;
-    public final String switchboardIP;
+    private static Map<String, CommandHandler> HANDLERS;
+    private final String switchboardIP;
+    private final PresenceService presenceService;
 
-    private static final Map<String, CommandHandler> HANDLERS =  Map.ofEntries(
-            Map.entry("VER", new VerHandler()),
-            Map.entry("INF", new InfHandler()),
-            Map.entry("USR", new UsrHandler()),
-            Map.entry("CVR", new CvrHandler()),
-            Map.entry("SYN", new SynHandler()),
-            Map.entry("CHG", new ChgHandler()),
-            Map.entry("OUT", new OutHandler()),
-            Map.entry("ADD", new AddHandler()),
-            Map.entry("REA", new ReaHandler()),
-            Map.entry("REM", new RemHandler()),
-            Map.entry("XFR", new XfrHandler())
-    );
+    public NotificationServer(String ip, DatabaseServices databaseServices, PresenceService presenceService) {
+        this.switchboardIP = ip;
+        this.presenceService = presenceService;
 
-    public NotificationServer(String switchboardIP) {
-        this.switchboardIP = switchboardIP;
+        AuthService auth = databaseServices.getAuthService();
+        ContactService contact = databaseServices.getContactService();
+        UserService user = databaseServices.getUserService();
+
+        HANDLERS = Map.ofEntries(
+                Map.entry("VER", new VerHandler()),
+                Map.entry("INF", new InfHandler()),
+                Map.entry("USR", new UsrHandler(auth)),
+                Map.entry("CVR", new CvrHandler()),
+                Map.entry("SYN", new SynHandler(contact, user)),
+                Map.entry("CHG", new ChgHandler(presenceService)),
+                Map.entry("OUT", new OutHandler(presenceService)),
+                Map.entry("ADD", new AddHandler(user, contact)),
+                Map.entry("REA", new ReaHandler(user, contact)),
+                Map.entry("REM", new RemHandler(user, contact)),
+                Map.entry("XFR", new XfrHandler())
+        );
     }
 
     @Override
     public void run() {
-        DatabaseConnection dbConn = new DatabaseConnection();
-        DatabaseServices databaseServices = new DatabaseServices(dbConn);
-
         try (ServerSocket server = new ServerSocket(PORT)) {
             LOGGER.info("Notification Server started on: {}", server.getLocalSocketAddress());
             while (true) {
                 Socket client = server.accept();
-                Thread.ofVirtual().start(() -> handleClient(client, databaseServices));
+                Thread.ofVirtual().start(() -> handleClient(client));
                 if (server.isClosed()) return;
             }
         } catch (IOException e) {
@@ -54,9 +58,9 @@ public class NotificationServer implements Runnable {
         }
     }
 
-    private void handleClient(Socket socket, DatabaseServices databaseServices) {
+    private void handleClient(Socket socket) {
         try {
-            ClientSession session = new ClientSession(socket, databaseServices);
+            ClientSession session = new ClientSession(socket);
             String line;
             while (!session.isClosed()) {
                 line = session.readLine();

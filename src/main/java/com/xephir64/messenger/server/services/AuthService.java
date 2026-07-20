@@ -19,8 +19,4 @@ public class AuthService {
     public boolean isThisUserExist(String email) throws SQLException {
         return userRepo.isThisUserExist(email);
     }
-
-    public User getFriendUser(int userId) throws SQLException {
-        return userRepo.findFriendById(userId);
-    }
 }

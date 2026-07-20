@@ -1,11 +1,7 @@
 package com.xephir64.messenger.server.switchboard;
 
-import com.xephir64.messenger.server.notification.session.ClientSession;
-import com.xephir64.messenger.server.services.PresenceService;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;

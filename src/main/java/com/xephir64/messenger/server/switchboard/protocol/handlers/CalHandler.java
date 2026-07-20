@@ -9,6 +9,12 @@ import com.xephir64.messenger.server.switchboard.SwitchboardSession;
 import java.io.IOException;
 
 public class CalHandler implements CommandHandler {
+    private PresenceService presenceService;
+
+    public CalHandler(PresenceService presenceService) {
+        this.presenceService = presenceService;
+    }
+
     @Override
     public void handle(SwitchboardSession session, Command cmd) throws IOException {
         String targetEmail = cmd.getArgs().getFirst();
@@ -22,7 +28,7 @@ public class CalHandler implements CommandHandler {
 
         session.send("CAL " + cmd.getTrId() + " RINGING " + conv.getSessionId());
 
-        ClientSession nsSession = PresenceService.getSession(targetEmail);
+        ClientSession nsSession = presenceService.getSession(targetEmail);
 
         if (nsSession == null) {
             session.send("217 User not online");

@@ -1,6 +1,7 @@
 package com.xephir64.messenger.server;
 
 import com.xephir64.messenger.server.notification.NotificationServer;
+import com.xephir64.messenger.server.services.*;
 import com.xephir64.messenger.server.switchboard.SwitchboardServer;
 
 public class Main {
@@ -9,8 +10,16 @@ public class Main {
 
         String ip = "192.168.1.10";
 
-        NotificationServer nb = new NotificationServer(ip);
-        SwitchboardServer sb = new SwitchboardServer(ip);
+        DatabaseConnection dbConn = new DatabaseConnection();
+        DatabaseServices databaseServices = new DatabaseServices(dbConn);
+
+        UserService user = databaseServices.getUserService();
+        ContactService contact = databaseServices.getContactService();
+
+        PresenceService presenceService = new PresenceService(contact, user);
+
+        NotificationServer nb = new NotificationServer(ip, databaseServices, presenceService);
+        SwitchboardServer sb = new SwitchboardServer(ip, databaseServices, presenceService);
 
         Thread notificationThread = builder.start(nb);
         Thread switchboardThread = builder.start(sb);

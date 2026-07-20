@@ -10,13 +10,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class UsrHandler implements CommandHandler {
+    private UserService userService;
+
+    public UsrHandler(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public void handle(SwitchboardSession session, Command cmd) throws IOException {
         String email = cmd.getArgs().getFirst();
         String token = cmd.getArgs().get(1);
 
-        UserService userService = session.getUserService();
         try {
             Conversation conv = SwitchboardManager.getConversation(token);
             session.setConversation(conv);

@@ -24,6 +24,10 @@ public class UserService {
         }
     }
 
+    public User getFriendUser(int userId) throws SQLException {
+        return userRepo.findFriendById(userId);
+    }
+
     public int incrementContactVersion(int userId) throws SQLException {
         userRepo.incrementListVersion(userId);
         return getContactVersion(userId);
